@@ -15,17 +15,23 @@ const EXPORT_DPI = 300;
 const BULK_SLIDE_WIDTH_IN = 13.333;
 const BULK_SLIDE_HEIGHT_IN = 7.5;
 const BULK_OUTER_MARGIN_IN = 0.3;
-const BULK_GAP_X_IN = 0.22;
-const BULK_GAP_Y_IN = 0.22;
+let cachedPptxCtor: any | null = null;
 
 async function loadPptxGenJS(): Promise<any> {
+  if (cachedPptxCtor) {
+    return cachedPptxCtor;
+  }
+
   if (typeof window === "undefined") {
     throw new Error("PPTX export is only available in the browser.");
   }
 
-  const maybeLoaded = (window as Window & { PptxGenJS?: any }).PptxGenJS;
-  if (maybeLoaded) {
-    return maybeLoaded;
+  const globalCtor =
+    (window as Window & { PptxGenJS?: any; JSZip?: any }).PptxGenJS ??
+    (window as Window & { PptxGenJS?: any; JSZip?: any }).JSZip;
+  if (globalCtor) {
+    cachedPptxCtor = globalCtor;
+    return globalCtor;
   }
 
   await new Promise<void>((resolve, reject) => {
@@ -45,10 +51,13 @@ async function loadPptxGenJS(): Promise<any> {
     document.head.appendChild(script);
   });
 
-  const loaded = (window as Window & { PptxGenJS?: any }).PptxGenJS;
+  const loaded =
+    (window as Window & { PptxGenJS?: any; JSZip?: any }).PptxGenJS ??
+    (window as Window & { PptxGenJS?: any; JSZip?: any }).JSZip;
   if (!loaded) {
-    throw new Error("PPTX engine not available.");
+    throw new Error("PPTX engine not available. Failed to load browser constructor.");
   }
+  cachedPptxCtor = loaded;
   return loaded;
 }
 
@@ -449,6 +458,7 @@ export async function exportEditableTombstonePptx(
   const slideH = pxToIn(sizeConfig.exportHeightPx);
 
   const pptx = new PptxGenJS();
+  const shapeType = pptx.ShapeType;
   const layoutName = `TOMBSTONE_${data.templateStyle}_${data.size}`.toUpperCase();
   pptx.defineLayout({ name: layoutName, width: slideW, height: slideH });
   pptx.layout = layoutName;
@@ -459,7 +469,7 @@ export async function exportEditableTombstonePptx(
   const slide = pptx.addSlide();
   await drawEditableTombstoneOnSlide({
     slide,
-    shapeType: PptxGenJS.ShapeType,
+    shapeType,
     data,
     typography,
     backgroundColor,
@@ -484,6 +494,7 @@ export async function exportBulkEditableTombstonesPptx(
   }
 
   const pptx = new PptxGenJS();
+  const shapeType = pptx.ShapeType;
   pptx.layout = "LAYOUT_WIDE";
   pptx.author = "Deal Tombstone Generator";
   pptx.subject = "Bulk editable tombstone export";
@@ -496,11 +507,25 @@ export async function exportBulkEditableTombstonesPptx(
   };
   const { columns, rows } = gridByPerSlide[perSlide];
   const perSlideCount = columns * rows;
+  const firstSizeConfig = getSizeConfigForStyle(entries[0].formData.templateStyle, entries[0].formData.size);
+  const cardWIn = pxToIn(firstSizeConfig.exportWidthPx);
+  const cardHIn = pxToIn(firstSizeConfig.exportHeightPx);
 
-  const cellW =
-    (BULK_SLIDE_WIDTH_IN - BULK_OUTER_MARGIN_IN * 2 - BULK_GAP_X_IN * (columns - 1)) / columns;
-  const cellH =
-    (BULK_SLIDE_HEIGHT_IN - BULK_OUTER_MARGIN_IN * 2 - BULK_GAP_Y_IN * (rows - 1)) / rows;
+  const availableW = BULK_SLIDE_WIDTH_IN - BULK_OUTER_MARGIN_IN * 2;
+  const availableH = BULK_SLIDE_HEIGHT_IN - BULK_OUTER_MARGIN_IN * 2;
+  const gapX = columns > 1 ? (availableW - columns * cardWIn) / (columns - 1) : 0;
+  const gapY = rows > 1 ? (availableH - rows * cardHIn) / (rows - 1) : 0;
+
+  if (gapX < 0 || gapY < 0) {
+    throw new Error(
+      `Selected size/style does not fit ${perSlide} per slide at true size. Choose fewer per slide or a smaller size.`
+    );
+  }
+
+  const usedW = columns * cardWIn + (columns - 1) * gapX;
+  const usedH = rows * cardHIn + (rows - 1) * gapY;
+  const startX = (BULK_SLIDE_WIDTH_IN - usedW) / 2;
+  const startY = (BULK_SLIDE_HEIGHT_IN - usedH) / 2;
 
   for (let i = 0; i < entries.length; i += perSlideCount) {
     const chunk = entries.slice(i, i + perSlideCount);
@@ -508,18 +533,18 @@ export async function exportBulkEditableTombstonesPptx(
     for (let idx = 0; idx < chunk.length; idx += 1) {
       const col = idx % columns;
       const row = Math.floor(idx / columns);
-      const x = BULK_OUTER_MARGIN_IN + col * (cellW + BULK_GAP_X_IN);
-      const y = BULK_OUTER_MARGIN_IN + row * (cellH + BULK_GAP_Y_IN);
+      const x = startX + col * (cardWIn + gapX);
+      const y = startY + row * (cardHIn + gapY);
       await drawEditableTombstoneOnSlide({
         slide,
-        shapeType: PptxGenJS.ShapeType,
+        shapeType,
         data: chunk[idx].formData,
         typography,
         backgroundColor: chunk[idx].backgroundColor,
         cellXIn: x,
         cellYIn: y,
-        cellWIn: cellW,
-        cellHIn: cellH
+        cellWIn: cardWIn,
+        cellHIn: cardHIn
       });
     }
   }

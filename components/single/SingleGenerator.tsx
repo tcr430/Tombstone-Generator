@@ -23,6 +23,7 @@ export function SingleGenerator({ typographySettings }: SingleGeneratorProps) {
   const [isExportingPptx, setIsExportingPptx] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
   const [logoObjectUrl, setLogoObjectUrl] = useState<string | null>(null);
+  const [logoInputResetKey, setLogoInputResetKey] = useState(0);
 
   const exportRef = useRef<HTMLDivElement>(null);
   const canExport = useMemo(() => isFormValid(formData), [formData]);
@@ -147,8 +148,9 @@ export function SingleGenerator({ typographySettings }: SingleGeneratorProps) {
       ].join("_");
 
       await exportEditableTombstonePptx(formData, typographySettings, getBackgroundCssColor(formData), filenameBase);
-    } catch {
-      setExportError("Editable PPTX export failed. Re-upload logo and try again.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      setExportError(`Editable PPTX export failed: ${message}`);
     } finally {
       setIsExportingPptx(false);
     }
@@ -159,6 +161,7 @@ export function SingleGenerator({ typographySettings }: SingleGeneratorProps) {
       URL.revokeObjectURL(logoObjectUrl);
     }
     setLogoObjectUrl(null);
+    setLogoInputResetKey((prev) => prev + 1);
     setFormData(DEFAULT_FORM_DATA);
     setErrors({});
     setExportError(null);
@@ -178,6 +181,7 @@ export function SingleGenerator({ typographySettings }: SingleGeneratorProps) {
         onDownload={handleDownload}
         onDownloadPptx={handleDownloadPptx}
         onReset={handleReset}
+        logoInputResetKey={logoInputResetKey}
       />
 
       <TombstonePreview data={formData} exportRef={exportRef} typographySettings={typographySettings} />

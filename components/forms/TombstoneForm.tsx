@@ -29,6 +29,7 @@ interface TombstoneFormProps {
   onDownload: () => void;
   onDownloadPptx: () => void;
   onReset: () => void;
+  logoInputResetKey: number;
 }
 
 export function TombstoneForm({
@@ -42,7 +43,8 @@ export function TombstoneForm({
   onLogoChange,
   onDownload,
   onDownloadPptx,
-  onReset
+  onReset,
+  logoInputResetKey
 }: TombstoneFormProps) {
   const isPortuguese = data.language === "pt";
   const selectSectorLabel = isPortuguese ? "Selecionar setor" : "Select sector";
@@ -135,6 +137,7 @@ export function TombstoneForm({
         <label className="block">
           <span className="mb-1 block text-sm text-muted">{FIELD_LABELS.logoUrl}</span>
           <input
+            key={logoInputResetKey}
             type="file"
             accept=".png,.jpg,.jpeg,.svg,.webp"
             className="w-full rounded-md border border-white/15 bg-field px-3 py-2 text-sm file:mr-3 file:rounded file:border-0 file:bg-white/10 file:px-2 file:py-1 file:text-xs file:text-white"
@@ -213,7 +216,6 @@ export function TombstoneForm({
               onChange("backgroundMode", event.target.value as TombstoneFormData["backgroundMode"])
             }
           >
-            <option value="black">Black</option>
             <option value="custom">Custom Color</option>
             <option value="transparent">Transparent</option>
           </select>

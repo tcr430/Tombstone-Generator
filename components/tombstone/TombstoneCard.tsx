@@ -317,7 +317,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
           fontSize: resolveFontSizePx("role"),
           letterSpacing: "0.01em"
         }}
-      >
+        >
         {roleText}
       </div>
     </div>

@@ -66,6 +66,15 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
   const validCount = useMemo(() => rowStatuses.filter((row) => row.status === "valid").length, [rowStatuses]);
   const errorCount = useMemo(() => rowStatuses.filter((row) => row.status === "error").length, [rowStatuses]);
   const sizeOptions = getSizeOptionsForStyle(settings.templateStyle);
+  const DEFAULT_BULK_SETTINGS: BulkGlobalSettings = {
+    language: "pt",
+    size: "medium",
+    format: "png",
+    templateStyle: "double-vertical",
+    pptxPerSlide: 6,
+    backgroundMode: "transparent",
+    backgroundColor: ""
+  };
 
   async function handleTemplateDownload(): Promise<void> {
     const blob = await buildBulkTemplateWorkbook();
@@ -76,6 +85,15 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
     setInputRows([]);
     setRowStatuses([]);
     setValidRows([]);
+  }
+
+  function handleBulkReset(): void {
+    setSettings(DEFAULT_BULK_SETTINGS);
+    setSheetFile(null);
+    setLogosZipFile(null);
+    setRenderData(DEFAULT_FORM_DATA);
+    setBulkError(null);
+    resetResults();
   }
 
   function validateSheetFile(file: File): string | null {
@@ -273,8 +291,9 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
         settings.pptxPerSlide,
         `tombstones_bulk_editable_${settings.pptxPerSlide}-per-slide.pptx`
       );
-    } catch {
-      setBulkError("Bulk editable PPTX generation failed.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      setBulkError(`Bulk editable PPTX generation failed: ${message}`);
     } finally {
       logoUrlMap.forEach((url) => URL.revokeObjectURL(url));
       setIsGeneratingPptx(false);
@@ -412,7 +431,6 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
                   }
                 >
                   <option value="transparent">Transparent (Default)</option>
-                  <option value="black">Black</option>
                   <option value="custom">Custom Color</option>
                 </select>
               </label>
@@ -493,6 +511,14 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
             {isGeneratingPptx
               ? "Generating PPTX..."
               : `Generate Editable PPTX (${settings.pptxPerSlide} per slide)`}
+          </button>
+          <button
+            type="button"
+            className="w-full rounded-md border border-white/20 bg-transparent px-4 py-2 text-sm font-medium"
+            onClick={handleBulkReset}
+            disabled={isValidating || isGenerating || isGeneratingPptx}
+          >
+            Reset Bulk
           </button>
 
           {bulkError && <p className="text-xs text-red-400">{bulkError}</p>}
