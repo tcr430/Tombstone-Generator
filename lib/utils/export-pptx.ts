@@ -427,7 +427,7 @@ async function drawEditableTombstoneOnSlide({
     slide.addText(roleText, {
       x: mapX(textLeftPx),
       y: mapY(roleTopPx),
-      w: toInScaled(Math.round(widthPx * 0.78)),
+      w: toInScaled(Math.round(widthPx * 0.84)),
       h: toInScaled(Math.round(heightPx * 0.05)),
       align: "left",
       fontFace,

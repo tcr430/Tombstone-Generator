@@ -189,35 +189,35 @@ export const LAYOUT_RATIOS = {
   monthYearBaseline: 0.464,
   dealValueBaseline: 0.596,
   descriptionBaseline: 0.702,
-  roleBaseline: 0.974
+  roleBaseline: 0.955
 } as const;
 
 export type TombstoneFontElement = "sector" | "date" | "description" | "role" | "dealValue" | "year";
 
 export const FONT_BASE_SIZES: Record<TombstoneStyle, Record<TombstoneFontElement, number>> = {
   "double-vertical": {
-    sector: 8,
-    date: 8,
-    description: 8,
-    role: 8,
-    dealValue: 11,
-    year: 8
+    sector: 9.6,
+    date: 9.6,
+    description: 9.6,
+    role: 9.6,
+    dealValue: 13.2,
+    year: 9.6
   },
   "left-top": {
-    sector: 8,
-    date: 8,
-    description: 8,
-    role: 8,
-    dealValue: 11,
-    year: 8
+    sector: 9.6,
+    date: 9.6,
+    description: 9.6,
+    role: 9.6,
+    dealValue: 13.2,
+    year: 9.6
   },
   "full-border-centered": {
-    sector: 10,
-    date: 10,
-    description: 10,
-    role: 10.6,
+    sector: 11,
+    date: 11,
+    description: 11,
+    role: 11.66,
     dealValue: 13.8,
-    year: 10
+    year: 11
   }
 };
 
