@@ -15,7 +15,7 @@ export function TombstonePreview({ data, exportRef, typographySettings }: Tombst
     <section className="rounded-xl border border-panelBorder bg-panel p-5">
       <h2 className="pb-4 text-sm font-semibold uppercase tracking-[0.11em] text-white/80">Live Preview</h2>
 
-      <div className="flex min-h-[560px] items-center justify-center rounded-lg border border-white/10 bg-[#0d0d0d] p-6">
+      <div className="flex min-h-[560px] items-center justify-center rounded-lg border border-black/15 bg-white p-6">
         <TombstoneCard data={data} mode="preview" typographySettings={typographySettings} />
       </div>
 

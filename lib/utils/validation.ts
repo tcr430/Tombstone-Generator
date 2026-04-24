@@ -40,7 +40,8 @@ export function validateForm(data: TombstoneFormData): TombstoneFormErrors {
   }
 
   const parsedValue = parseDealValue(data.dealValue);
-  if (data.dealValue && parsedValue === null) {
+  const isUndisclosed = data.dealValue.trim().toLowerCase() === "undisclosed";
+  if (data.dealValue && parsedValue === null && !isUndisclosed) {
     errors.dealValue = "Deal value must be a valid number.";
   }
 

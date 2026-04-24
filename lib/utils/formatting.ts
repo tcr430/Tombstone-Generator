@@ -40,6 +40,10 @@ export function parseDealValue(rawValue: string): number | null {
 }
 
 export function formatDealValue(rawValue: string, language: Language): string {
+  if (rawValue.trim().toLowerCase() === "undisclosed") {
+    return "Undisclosed";
+  }
+
   const numericValue = parseDealValue(rawValue);
   if (numericValue === null) {
     return "";

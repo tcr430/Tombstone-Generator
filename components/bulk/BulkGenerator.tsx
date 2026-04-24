@@ -27,6 +27,7 @@ import {
 import { getBackgroundCssColor } from "@/lib/utils/color";
 import { renderTombstoneBlob } from "@/lib/utils/export";
 import { exportBulkEditableTombstonesPptx } from "@/lib/utils/export-pptx";
+import { normalizeImageBlob } from "@/lib/utils/image";
 import { TypographySettings } from "@/lib/types/tombstone";
 
 function waitForNextPaint(): Promise<void> {
@@ -187,7 +188,13 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
         let logoUrl = logoUrlMap.get(row.logoKey);
         if (!logoUrl) {
           const logoBlob = await logoEntry.async("blob");
-          logoUrl = URL.createObjectURL(logoBlob);
+          let normalizedLogoBlob: Blob = logoBlob;
+          try {
+            normalizedLogoBlob = await normalizeImageBlob(logoBlob, { maxDimension: 1600, outputType: "image/png" });
+          } catch {
+            normalizedLogoBlob = logoBlob;
+          }
+          logoUrl = URL.createObjectURL(normalizedLogoBlob);
           logoUrlMap.set(row.logoKey, logoUrl);
         }
 
@@ -240,7 +247,13 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
         let logoUrl = logoUrlMap.get(row.logoKey);
         if (!logoUrl) {
           const logoBlob = await logoEntry.async("blob");
-          logoUrl = URL.createObjectURL(logoBlob);
+          let normalizedLogoBlob: Blob = logoBlob;
+          try {
+            normalizedLogoBlob = await normalizeImageBlob(logoBlob, { maxDimension: 1600, outputType: "image/png" });
+          } catch {
+            normalizedLogoBlob = logoBlob;
+          }
+          logoUrl = URL.createObjectURL(normalizedLogoBlob);
           logoUrlMap.set(row.logoKey, logoUrl);
         }
 

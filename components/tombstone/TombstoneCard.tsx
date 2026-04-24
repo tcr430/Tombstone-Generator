@@ -31,14 +31,15 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
   const textScale = 1.25 * (typographySettings.fontSizeScale / 100);
   const renderScale = widthPx / sizeConfig.previewWidthPx;
   const selectedFontFamily = getFontFamilyCss(typographySettings.fontFamily);
+  const logoScale = 0.9;
   const resolveFontSizePx = (element: Parameters<typeof getFontBaseSize>[1]) =>
     `${Math.round(getFontBaseSize(data.templateStyle, element) * fontScale * textScale * renderScale * 10) / 10}px`;
 
   const contentLeft = Math.round(widthPx * LAYOUT_RATIOS.contentLeft);
   const textLeft = Math.max(0, contentLeft - Math.round(widthPx * 0.04));
   const logoTop = Math.round(heightPx * LAYOUT_RATIOS.logoTop);
-  const logoWidth = Math.round(widthPx * LAYOUT_RATIOS.logoWidth);
-  const logoHeight = Math.round(heightPx * LAYOUT_RATIOS.logoHeight);
+  const logoWidth = Math.round(widthPx * LAYOUT_RATIOS.logoWidth * logoScale);
+  const logoHeight = Math.round(heightPx * LAYOUT_RATIOS.logoHeight * logoScale);
   const logoLeft = Math.round((widthPx - logoWidth) / 2);
   const sectorTop = Math.round(heightPx * LAYOUT_RATIOS.sectorBaseline - 10 * fontScale * renderScale);
   const monthYearTop = Math.round(heightPx * LAYOUT_RATIOS.monthYearBaseline - 8 * fontScale * renderScale);
@@ -65,20 +66,23 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
   if (data.templateStyle === "full-border-centered") {
     const centeredPadX = Math.round(widthPx * 0.07);
     const logoTopPx = Math.round(heightPx * 0.055);
-    const logoBoxHeight = Math.round(heightPx * 0.225);
-    const roleTopPx = Math.round(heightPx * 0.305);
+    const contentW = widthPx - centeredPadX * 2;
+    const logoBoxHeight = Math.round(heightPx * 0.225 * logoScale);
+    const logoBoxWidth = Math.round(contentW * logoScale);
+    const roleTopPx = Math.round(heightPx * 0.295);
+    const roleHeightPx = Math.round(heightPx * 0.13);
     const descTopPx = Math.round(heightPx * 0.475);
     const valueTopPx = Math.round(heightPx * 0.82);
     const yearTopPx = Math.round(heightPx * 0.91);
     const descHeightPx = Math.max(10, valueTopPx - descTopPx - Math.round(heightPx * 0.03));
     const borderColor = "#CFCFCF";
     const borderRadiusPx = Math.max(6, Math.round(widthPx * 0.03));
-    const borderWidthPx = Math.max(2, Math.round(widthPx * 0.008));
+    const borderWidthPx = Math.max(3, Math.round(widthPx * 0.012));
 
     return (
       <div
         ref={ref}
-        className="relative overflow-hidden text-white"
+        className="relative overflow-hidden text-black"
         style={{
           width: `${widthPx}px`,
           height: `${heightPx}px`,
@@ -121,7 +125,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
             className="absolute left-1/2 flex -translate-x-1/2 items-center justify-center"
             style={{
               top: `${logoTopPx}px`,
-              width: `${widthPx - centeredPadX * 2}px`,
+              width: `${logoBoxWidth}px`,
               height: `${logoBoxHeight}px`
             }}
           >
@@ -133,18 +137,20 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
                 draggable={false}
               />
             ) : (
-              <div className="h-full w-full border border-white/20" />
+              <div className="h-full w-full border border-black/20" />
             )}
           </div>
 
           <div
-            className="absolute left-1/2 -translate-x-1/2 overflow-hidden break-words font-medium uppercase text-white/85"
+            className="absolute left-1/2 -translate-x-1/2 break-words text-center font-medium uppercase text-black/85"
             style={{
               top: `${roleTopPx}px`,
               width: `${Math.round((widthPx - centeredPadX * 2) * 0.94)}px`,
-              maxHeight: `${Math.round(heightPx * 0.085)}px`,
+              height: `${roleHeightPx}px`,
+              overflow: "hidden",
+              backgroundColor: "transparent",
               fontSize: resolveFontSizePx("role"),
-              lineHeight: 1.2,
+              lineHeight: 1.15,
               letterSpacing: "0.03em"
             }}
           >
@@ -152,7 +158,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
           </div>
 
           <div
-            className="absolute left-1/2 -translate-x-1/2 overflow-hidden whitespace-normal break-words font-normal text-white/85"
+            className="absolute left-1/2 -translate-x-1/2 overflow-hidden whitespace-normal break-words font-normal text-black/85"
             style={{
               top: `${descTopPx}px`,
               width: `${Math.round((widthPx - centeredPadX * 2) * 0.9)}px`,
@@ -166,7 +172,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
           </div>
 
           <div
-            className="absolute left-1/2 -translate-x-1/2 font-semibold text-white"
+            className="absolute left-1/2 -translate-x-1/2 font-semibold text-black"
             style={{
               top: `${valueTopPx}px`,
               width: `${Math.round((widthPx - centeredPadX * 2) * 0.9)}px`,
@@ -178,7 +184,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
           </div>
 
           <div
-            className="absolute left-1/2 -translate-x-1/2 font-normal text-white/76"
+            className="absolute left-1/2 -translate-x-1/2 font-normal text-black/70"
             style={{
               top: `${yearTopPx}px`,
               width: `${Math.round((widthPx - centeredPadX * 2) * 0.9)}px`,
@@ -196,7 +202,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
   return (
     <div
       ref={ref}
-      className="relative overflow-hidden text-white"
+      className="relative overflow-hidden text-black"
       style={{
         width: `${widthPx}px`,
         height: `${heightPx}px`,
@@ -207,14 +213,14 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          borderLeft: "1px solid #A6A6A6",
-          borderRight: data.templateStyle === "double-vertical" ? "1px solid #A6A6A6" : "none",
-          borderTop: data.templateStyle === "left-top" ? "1px solid #A6A6A6" : "none"
+          borderLeft: "2px solid #8A8A8A",
+          borderRight: data.templateStyle === "double-vertical" ? "2px solid #8A8A8A" : "none",
+          borderTop: data.templateStyle === "left-top" ? "2px solid #8A8A8A" : "none"
         }}
       />
 
       <div
-        className="absolute left-0 whitespace-nowrap font-normal uppercase text-white/82"
+        className="absolute left-0 whitespace-nowrap font-normal uppercase text-black/82"
         style={{
           top: `${sectorTop}px`,
           left: `${Math.round(widthPx * 0.04)}px`,
@@ -257,12 +263,12 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
             draggable={false}
           />
         ) : (
-          <div className="h-full w-full border border-white/20" />
+          <div className="h-full w-full border border-black/20" />
         )}
       </div>
 
       <div
-        className="absolute max-w-[78%] break-words font-normal text-white/82"
+        className="absolute max-w-[78%] break-words font-normal text-black/82"
         style={{
           top: `${monthYearTop}px`,
           left: `${textLeft}px`,
@@ -274,7 +280,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
       </div>
 
       <div
-        className="absolute max-w-[78%] break-words font-semibold text-white"
+        className="absolute max-w-[78%] break-words font-semibold text-black"
         style={{
           top: `${dealValueTop}px`,
           left: `${textLeft}px`,
@@ -287,7 +293,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
       </div>
 
       <div
-        className="absolute max-w-[78%] break-words font-normal text-white/85"
+        className="absolute max-w-[78%] break-words font-normal text-black/85"
         style={{
           top: `${descriptionTop}px`,
           left: `${textLeft}px`,
@@ -300,7 +306,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
       </div>
 
       <div
-        className="absolute max-w-[78%] break-words font-normal text-white/75"
+        className="absolute max-w-[78%] break-words font-normal text-black/72"
         style={{
           top: `${roleTop}px`,
           left: `${textLeft}px`,

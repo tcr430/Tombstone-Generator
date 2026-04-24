@@ -137,7 +137,7 @@ export const TOMBSTONE_SIZE_CONFIG: Record<
     previewWidthPx: 220,
     previewHeightPx: 275,
     spacingScale: 1,
-    fontScale: 1
+    fontScale: 1.15
   },
   large: {
     exportWidthPx: 756,
@@ -145,7 +145,7 @@ export const TOMBSTONE_SIZE_CONFIG: Record<
     previewWidthPx: 256,
     previewHeightPx: 320,
     spacingScale: 1.08,
-    fontScale: 1.08
+    fontScale: 1.3
   }
 };
 
@@ -175,8 +175,8 @@ export const FULL_BORDER_SIZE_CONFIG: Record<
     exportHeightPx: 709,
     previewWidthPx: 238,
     previewHeightPx: 340,
-    spacingScale: 1.08,
-    fontScale: 1.08
+    spacingScale: 1.21,
+    fontScale: 1.21
   }
 };
 
@@ -212,12 +212,12 @@ export const FONT_BASE_SIZES: Record<TombstoneStyle, Record<TombstoneFontElement
     year: 8
   },
   "full-border-centered": {
-    sector: 8,
-    date: 8,
-    description: 8,
-    role: 8.5,
-    dealValue: 11,
-    year: 8
+    sector: 10,
+    date: 10,
+    description: 10,
+    role: 10.6,
+    dealValue: 13.8,
+    year: 10
   }
 };
 
@@ -249,8 +249,8 @@ export const DEFAULT_FORM_DATA: TombstoneFormData = {
   description: "",
   esg: "0",
   templateStyle: "double-vertical",
-  backgroundMode: "black",
-  backgroundColor: "",
+  backgroundMode: "custom",
+  backgroundColor: "#FFFFFF",
   size: "medium",
   format: "png"
 };

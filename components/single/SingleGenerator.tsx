@@ -8,6 +8,7 @@ import { TombstoneFormData, TombstoneFormErrors, TypographySettings } from "@/li
 import { getBackgroundCssColor } from "@/lib/utils/color";
 import { exportTombstone } from "@/lib/utils/export";
 import { exportEditableTombstonePptx } from "@/lib/utils/export-pptx";
+import { normalizeImageBlob } from "@/lib/utils/image";
 import { sanitizeFilenamePart } from "@/lib/utils/bulk";
 import { isFormValid, validateForm, validateLogoFile } from "@/lib/utils/validation";
 
@@ -62,7 +63,7 @@ export function SingleGenerator({ typographySettings }: SingleGeneratorProps) {
     });
   }
 
-  function handleLogoChange(event: ChangeEvent<HTMLInputElement>): void {
+  async function handleLogoChange(event: ChangeEvent<HTMLInputElement>): Promise<void> {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -72,7 +73,13 @@ export function SingleGenerator({ typographySettings }: SingleGeneratorProps) {
       return;
     }
 
-    const nextUrl = URL.createObjectURL(file);
+    let sourceBlob: Blob = file;
+    try {
+      sourceBlob = await normalizeImageBlob(file, { maxDimension: 1600, outputType: "image/png" });
+    } catch {
+      sourceBlob = file;
+    }
+    const nextUrl = URL.createObjectURL(sourceBlob);
     if (logoObjectUrl) {
       URL.revokeObjectURL(logoObjectUrl);
     }

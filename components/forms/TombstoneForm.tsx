@@ -141,7 +141,7 @@ export function TombstoneForm({
             onChange={onLogoChange}
           />
           <p className="pt-1 text-[11px] text-muted">
-            Allowed: PNG/JPEG/SVG/WebP, max {MAX_LOGO_FILE_SIZE_MB}MB
+            Allowed: PNG/JPEG/SVG/WebP, max {MAX_LOGO_FILE_SIZE_MB}MB. Oversized image dimensions are auto-normalized.
           </p>
           {errors.logoUrl && <p className="pt-1 text-xs text-red-400">{errors.logoUrl}</p>}
         </label>

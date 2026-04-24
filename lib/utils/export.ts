@@ -5,6 +5,47 @@ import { DownloadFormat, TombstoneSize } from "@/lib/types/tombstone";
 import { getSizeConfigForStyle } from "@/lib/constants/tombstone";
 import { TombstoneStyle } from "@/lib/types/tombstone";
 
+function waitForNextFrame(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
+async function waitForImageElement(image: HTMLImageElement): Promise<void> {
+  if (image.complete && image.naturalWidth > 0) {
+    if (typeof image.decode === "function") {
+      try {
+        await image.decode();
+      } catch {
+        // Ignore decode failures; the image is already complete.
+      }
+    }
+    return;
+  }
+
+  await new Promise<void>((resolve) => {
+    const done = () => {
+      image.removeEventListener("load", done);
+      image.removeEventListener("error", done);
+      resolve();
+    };
+    image.addEventListener("load", done, { once: true });
+    image.addEventListener("error", done, { once: true });
+  });
+}
+
+async function waitForRenderableAssets(node: HTMLElement): Promise<void> {
+  if (typeof document !== "undefined" && "fonts" in document) {
+    try {
+      await (document as Document & { fonts: FontFaceSet }).fonts.ready;
+    } catch {
+      // Continue even if font readiness check fails.
+    }
+  }
+
+  const images = Array.from(node.querySelectorAll("img"));
+  await Promise.all(images.map((image) => waitForImageElement(image)));
+  await waitForNextFrame();
+}
+
 export function downloadBlob(blob: Blob, filename: string): void {
   const blobUrl = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
@@ -40,6 +81,7 @@ export async function renderTombstoneBlob(
   backgroundColor: string | null
 ): Promise<{ blob: Blob; extension: string }> {
   const { exportWidthPx, exportHeightPx } = getSizeConfigForStyle(templateStyle, size);
+  await waitForRenderableAssets(node);
 
   if (format === "png" || format === "jpeg") {
     const canvas = await toCanvas(node, {
