@@ -64,7 +64,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
     ? Math.round(32 * fontScale * textScale * renderScale)
     : Math.round(16 * fontScale * textScale * renderScale);
   const esgRight = isFullBorderCentered ? Math.round(widthPx * 0.015) : Math.round(widthPx * 0.04);
-  const esgTopFullBorder = Math.max(0, Math.round(heightPx * 0.003));
+  const esgTopFullBorder = Math.max(0, Math.round(heightPx * 0.001));
 
   if (data.templateStyle === "full-border-centered") {
     const centeredPadX = Math.round(widthPx * 0.07);

@@ -218,7 +218,7 @@ async function drawEditableTombstoneOnSlide({
     if (esgData) {
       const esgIconSize = Math.round(32 * fontScale * textScale * renderScale);
       const esgRight = Math.round(widthPx * 0.015);
-      const esgTop = Math.max(0, Math.round(heightPx * 0.003));
+      const esgTop = Math.max(0, Math.round(heightPx * 0.001));
       slide.addImage({
         data: esgData,
         x: mapX(widthPx - esgRight - esgIconSize),
