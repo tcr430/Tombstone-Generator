@@ -41,11 +41,14 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
   const logoWidth = Math.round(widthPx * LAYOUT_RATIOS.logoWidth * logoScale);
   const logoHeight = Math.round(heightPx * LAYOUT_RATIOS.logoHeight * logoScale);
   const logoLeft = Math.round((widthPx - logoWidth) / 2);
-  const sectorTop = Math.round(heightPx * LAYOUT_RATIOS.sectorBaseline - 10 * fontScale * renderScale);
-  const monthYearTop = Math.round(heightPx * LAYOUT_RATIOS.monthYearBaseline - 8 * fontScale * renderScale);
-  const dealValueTop = Math.round(heightPx * LAYOUT_RATIOS.dealValueBaseline - 11 * fontScale * renderScale);
-  const descriptionTop = Math.round(heightPx * LAYOUT_RATIOS.descriptionBaseline - 8 * fontScale * renderScale);
-  const roleTop = Math.round(heightPx * LAYOUT_RATIOS.roleBaseline - 8 * fontScale * renderScale);
+  const layoutNudgePx = Math.round(3 * fontScale * renderScale);
+  const sectorTop = Math.round(heightPx * LAYOUT_RATIOS.sectorBaseline - 10 * fontScale * renderScale + layoutNudgePx);
+  const monthYearTop = Math.round(heightPx * LAYOUT_RATIOS.monthYearBaseline - 8 * fontScale * renderScale - layoutNudgePx);
+  const dealValueTop = Math.round(heightPx * LAYOUT_RATIOS.dealValueBaseline - 11 * fontScale * renderScale - layoutNudgePx);
+  const descriptionTop = Math.round(
+    heightPx * LAYOUT_RATIOS.descriptionBaseline - 8 * fontScale * renderScale - layoutNudgePx
+  );
+  const roleTop = Math.round(heightPx * LAYOUT_RATIOS.roleBaseline - 8 * fontScale * renderScale - layoutNudgePx);
 
   const valueText = formatDealValue(data.dealValue, data.language);
   const dateText = formatMonthYear(data.month, data.language);

@@ -330,11 +330,22 @@ async function drawEditableTombstoneOnSlide({
     const logoWidthPx = Math.round(widthPx * LAYOUT_RATIOS.logoWidth * logoScale);
     const logoHeightPx = Math.round(heightPx * LAYOUT_RATIOS.logoHeight * logoScale);
     const logoLeftPx = Math.round((widthPx - logoWidthPx) / 2);
-    const sectorTopPx = Math.round(heightPx * LAYOUT_RATIOS.sectorBaseline - 10 * fontScale * renderScale);
-    const monthYearTopPx = Math.round(heightPx * LAYOUT_RATIOS.monthYearBaseline - 8 * fontScale * renderScale);
-    const dealValueTopPx = Math.round(heightPx * LAYOUT_RATIOS.dealValueBaseline - 11 * fontScale * renderScale);
-    const descriptionTopPx = Math.round(heightPx * LAYOUT_RATIOS.descriptionBaseline - 8 * fontScale * renderScale);
-    const roleTopPx = Math.round(heightPx * LAYOUT_RATIOS.roleBaseline - 8 * fontScale * renderScale);
+    const layoutNudgePx = Math.round(3 * fontScale * renderScale);
+    const sectorTopPx = Math.round(
+      heightPx * LAYOUT_RATIOS.sectorBaseline - 10 * fontScale * renderScale + layoutNudgePx
+    );
+    const monthYearTopPx = Math.round(
+      heightPx * LAYOUT_RATIOS.monthYearBaseline - 8 * fontScale * renderScale - layoutNudgePx
+    );
+    const dealValueTopPx = Math.round(
+      heightPx * LAYOUT_RATIOS.dealValueBaseline - 11 * fontScale * renderScale - layoutNudgePx
+    );
+    const descriptionTopPx = Math.round(
+      heightPx * LAYOUT_RATIOS.descriptionBaseline - 8 * fontScale * renderScale - layoutNudgePx
+    );
+    const roleTopPx = Math.round(
+      heightPx * LAYOUT_RATIOS.roleBaseline - 8 * fontScale * renderScale - layoutNudgePx
+    );
 
     slide.addText(sectorText, {
       x: mapX(Math.round(widthPx * 0.04)),

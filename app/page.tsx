@@ -15,7 +15,7 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] px-5 py-6 text-white md:px-8 lg:px-10">
+    <main className="min-h-screen bg-[#171717] px-5 py-6 text-white md:px-8 lg:px-10">
       <div className="mx-auto max-w-[1400px]">
         <header className="flex items-start justify-between gap-4 pb-6">
           <div>
