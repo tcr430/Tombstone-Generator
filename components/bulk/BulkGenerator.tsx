@@ -40,6 +40,17 @@ interface BulkGeneratorProps {
   typographySettings: TypographySettings;
 }
 
+function getExportTimestamp(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+  return `${year}${month}${day}_${hours}${minutes}${seconds}`;
+}
+
 export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
   const [settings, setSettings] = useState<BulkGlobalSettings>({
     language: "pt",
@@ -192,6 +203,7 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
     setBulkError(null);
 
     const zip = new JSZip();
+    const timestamp = getExportTimestamp();
     const logosMap = await parseLogosZip(logosZipFile);
     const logoUrlMap = new Map<string, string>();
 
@@ -234,7 +246,7 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
       }
 
       const zipBlob = await zip.generateAsync({ type: "blob" });
-      downloadBlob(zipBlob, "tombstones_bulk.zip");
+      downloadBlob(zipBlob, `tombstones_bulk_${timestamp}.zip`);
     } catch {
       setBulkError("Bulk generation failed while rendering files.");
     } finally {
@@ -251,6 +263,7 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
 
     setIsGeneratingPptx(true);
     setBulkError(null);
+    const timestamp = getExportTimestamp();
     const logosMap = await parseLogosZip(logosZipFile);
     const logoUrlMap = new Map<string, string>();
 
@@ -289,7 +302,7 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
         pptxEntries,
         typographySettings,
         settings.pptxPerSlide,
-        `tombstones_bulk_editable_${settings.pptxPerSlide}-per-slide.pptx`
+        `tombstones_bulk_editable_${settings.pptxPerSlide}-per-slide_${timestamp}.pptx`
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";

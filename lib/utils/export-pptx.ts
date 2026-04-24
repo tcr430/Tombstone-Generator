@@ -124,6 +124,41 @@ async function imageUrlToPngData(url: string): Promise<string> {
   return canvas.toDataURL("image/png");
 }
 
+async function imageUrlToPngDataWithSize(url: string): Promise<{ data: string; width: number; height: number }> {
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const next = new Image();
+    next.onload = () => resolve(next);
+    next.onerror = () => reject(new Error("Could not load image."));
+    next.src = url;
+  });
+
+  const width = Math.max(1, Math.round(img.naturalWidth || 1));
+  const height = Math.max(1, Math.round(img.naturalHeight || 1));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Could not render image.");
+  ctx.drawImage(img, 0, 0, width, height);
+  return { data: canvas.toDataURL("image/png"), width, height };
+}
+
+function fitContainRect(
+  imageWidth: number,
+  imageHeight: number,
+  boxX: number,
+  boxY: number,
+  boxW: number,
+  boxH: number
+): { x: number; y: number; w: number; h: number } {
+  const scale = Math.min(boxW / Math.max(1, imageWidth), boxH / Math.max(1, imageHeight));
+  const w = imageWidth * scale;
+  const h = imageHeight * scale;
+  const x = boxX + (boxW - w) / 2;
+  const y = boxY + (boxH - h) / 2;
+  return { x, y, w, h };
+}
+
 function resolvePublicAsset(path: string): string {
   if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("blob:")) return path;
   if (path.startsWith("/")) {
@@ -184,7 +219,7 @@ async function drawEditableTombstoneOnSlide({
   const roleText = getRoleLabel(data.role, data.language);
   const esgIconPath = data.templateStyle === "full-border-centered" ? "/esg2.png" : "/esg.png";
 
-  const logoData = data.logoUrl ? await imageUrlToPngData(resolvePublicAsset(data.logoUrl)) : null;
+  const logoData = data.logoUrl ? await imageUrlToPngDataWithSize(resolvePublicAsset(data.logoUrl)) : null;
   const esgData = data.esg === "1" ? await imageUrlToPngData(resolvePublicAsset(esgIconPath)) : null;
   const cardBgHex = data.backgroundMode === "transparent" ? null : normalizeColorToPptxHex(backgroundColor ?? "#000000");
   if (cardBgHex) {
@@ -238,19 +273,21 @@ async function drawEditableTombstoneOnSlide({
     }
 
     if (logoData) {
+      const logoBoxX = Math.round(centeredPadX + (contentW - logoBoxWidth) / 2);
+      const logoFit = fitContainRect(
+        logoData.width,
+        logoData.height,
+        logoBoxX,
+        logoTopPx,
+        logoBoxWidth,
+        logoBoxHeight
+      );
       slide.addImage({
-        data: logoData,
-        x: mapX(Math.round(centeredPadX + (contentW - logoBoxWidth) / 2)),
-        y: mapY(logoTopPx),
-        w: toInScaled(logoBoxWidth),
-        h: toInScaled(logoBoxHeight),
-        sizing: {
-          type: "contain",
-          x: mapX(Math.round(centeredPadX + (contentW - logoBoxWidth) / 2)),
-          y: mapY(logoTopPx),
-          w: toInScaled(logoBoxWidth),
-          h: toInScaled(logoBoxHeight)
-        }
+        data: logoData.data,
+        x: mapX(logoFit.x),
+        y: mapY(logoFit.y),
+        w: toInScaled(logoFit.w),
+        h: toInScaled(logoFit.h)
       });
     }
 
@@ -382,19 +419,13 @@ async function drawEditableTombstoneOnSlide({
     }
 
     if (logoData) {
+      const logoFit = fitContainRect(logoData.width, logoData.height, logoLeftPx, logoTopPx, logoWidthPx, logoHeightPx);
       slide.addImage({
-        data: logoData,
-        x: mapX(logoLeftPx),
-        y: mapY(logoTopPx),
-        w: toInScaled(logoWidthPx),
-        h: toInScaled(logoHeightPx),
-        sizing: {
-          type: "contain",
-          x: mapX(logoLeftPx),
-          y: mapY(logoTopPx),
-          w: toInScaled(logoWidthPx),
-          h: toInScaled(logoHeightPx)
-        }
+        data: logoData.data,
+        x: mapX(logoFit.x),
+        y: mapY(logoFit.y),
+        w: toInScaled(logoFit.w),
+        h: toInScaled(logoFit.h)
       });
     }
 
