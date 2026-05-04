@@ -255,8 +255,8 @@ async function drawEditableTombstoneOnSlide({
     const roleTopPx = Math.round(heightPx * 0.295);
     const roleHeightPx = Math.round(heightPx * 0.13);
     const descTopPx = Math.round(heightPx * 0.475);
-    const valueTopPx = Math.round(heightPx * 0.82);
-    const yearTopPx = Math.round(heightPx * 0.91);
+    const valueTopPx = Math.round(heightPx * 0.81);
+    const yearTopPx = Math.round(heightPx * 0.9);
     const descHeightPx = Math.max(10, valueTopPx - descTopPx - Math.round(heightPx * 0.03));
 
     if (esgData) {
