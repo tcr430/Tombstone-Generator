@@ -17,6 +17,15 @@ const BULK_SLIDE_HEIGHT_IN = 7.5;
 const BULK_OUTER_MARGIN_IN = 0.3;
 let cachedPptxCtor: any | null = null;
 
+function toTitleCaseWords(value: string): string {
+  return value
+    .trim()
+    .toLocaleLowerCase()
+    .replace(/(^|[\s/-])([^\s/-])/g, (_match, separator: string, char: string) => {
+      return `${separator}${char.toLocaleUpperCase()}`;
+    });
+}
+
 async function loadPptxGenJS(): Promise<any> {
   if (cachedPptxCtor) {
     return cachedPptxCtor;
@@ -209,13 +218,21 @@ async function drawEditableTombstoneOnSlide({
   const fontScale = sizeConfig.fontScale;
   const textScale = 1.25 * (typography.fontSizeScale / 100);
   const renderScale = widthPx / sizeConfig.previewWidthPx;
-  const toFontPt = (element: Parameters<typeof getFontBaseSize>[1]) =>
-    round2(pxToPt(getFontBaseSize(data.templateStyle, element) * fontScale * textScale * renderScale) * scale);
+  const toFontPt = (element: Parameters<typeof getFontBaseSize>[1]) => {
+    const isSmallClassic =
+      data.size === "small" &&
+      (data.templateStyle === "double-vertical" || data.templateStyle === "left-top") &&
+      (element === "role" || element === "description" || element === "date" || element === "sector");
+    const px = isSmallClassic
+      ? 6 * renderScale
+      : getFontBaseSize(data.templateStyle, element) * fontScale * textScale * renderScale;
+    return round2(pxToPt(px) * scale);
+  };
 
   const valueText = formatDealValue(data.dealValue, data.language);
   const dateText = formatMonthYear(data.month, data.language);
   const yearText = data.month ? data.month.split("-")[0] ?? "" : "";
-  const sectorText = getSectorLabel(data.sector, data.language);
+  const sectorText = toTitleCaseWords(getSectorLabel(data.sector, data.language));
   const roleText = getRoleLabel(data.role, data.language);
   const esgIconPath = data.templateStyle === "full-border-centered" ? "/esg2.png" : "/esg.png";
 
@@ -255,8 +272,8 @@ async function drawEditableTombstoneOnSlide({
     const roleTopPx = Math.round(heightPx * 0.295);
     const roleHeightPx = Math.round(heightPx * 0.13);
     const descTopPx = Math.round(heightPx * 0.475);
-    const valueTopPx = Math.round(heightPx * 0.81);
-    const yearTopPx = Math.round(heightPx * 0.9);
+    const valueTopPx = Math.round(heightPx * 0.795);
+    const yearTopPx = Math.round(heightPx * 0.885);
     const descHeightPx = Math.max(10, valueTopPx - descTopPx - Math.round(heightPx * 0.03));
 
     if (esgData) {
@@ -301,7 +318,8 @@ async function drawEditableTombstoneOnSlide({
       fontFace,
       color: "1A1A1A",
       bold: false,
-      fontSize: toFontPt("role")
+      fontSize: toFontPt("role"),
+      margin: 0
     });
 
     slide.addText(data.description, {
@@ -314,7 +332,8 @@ async function drawEditableTombstoneOnSlide({
       fontFace,
       color: "1A1A1A",
       bold: false,
-      fontSize: toFontPt("description")
+      fontSize: toFontPt("description"),
+      margin: 0
     });
 
     slide.addText(valueText, {
@@ -327,7 +346,8 @@ async function drawEditableTombstoneOnSlide({
       fontFace,
       color: "000000",
       bold: true,
-      fontSize: toFontPt("dealValue")
+      fontSize: toFontPt("dealValue"),
+      margin: 0
     });
 
     slide.addText(yearText, {
@@ -340,7 +360,8 @@ async function drawEditableTombstoneOnSlide({
       fontFace,
       color: "3A3A3A",
       bold: false,
-      fontSize: toFontPt("year")
+      fontSize: toFontPt("year"),
+      margin: 0
     });
   } else {
     const lineColor = "8A8A8A";
@@ -403,7 +424,8 @@ async function drawEditableTombstoneOnSlide({
       fontFace,
       color: "2B2B2B",
       bold: false,
-      fontSize: toFontPt("sector")
+      fontSize: toFontPt("sector"),
+      margin: 0
     });
 
     if (esgData) {
@@ -437,7 +459,8 @@ async function drawEditableTombstoneOnSlide({
       align: "left",
       fontFace,
       color: "2B2B2B",
-      fontSize: toFontPt("date")
+      fontSize: toFontPt("date"),
+      margin: 0
     });
 
     slide.addText(valueText, {
@@ -449,7 +472,8 @@ async function drawEditableTombstoneOnSlide({
       fontFace,
       color: "000000",
       bold: true,
-      fontSize: toFontPt("dealValue")
+      fontSize: toFontPt("dealValue"),
+      margin: 0
     });
 
     slide.addText(data.description, {
@@ -461,7 +485,8 @@ async function drawEditableTombstoneOnSlide({
       valign: "top",
       fontFace,
       color: "1A1A1A",
-      fontSize: toFontPt("description")
+      fontSize: toFontPt("description"),
+      margin: 0
     });
 
     slide.addText(roleText, {
@@ -472,7 +497,8 @@ async function drawEditableTombstoneOnSlide({
       align: "left",
       fontFace,
       color: "404040",
-      fontSize: toFontPt("role")
+      fontSize: toFontPt("role"),
+      margin: 0
     });
   }
 }

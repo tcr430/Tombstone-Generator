@@ -19,6 +19,15 @@ interface TombstoneCardProps {
   typographySettings: TypographySettings;
 }
 
+function toTitleCaseWords(value: string): string {
+  return value
+    .trim()
+    .toLocaleLowerCase()
+    .replace(/(^|[\s/-])([^\s/-])/g, (_match, separator: string, char: string) => {
+      return `${separator}${char.toLocaleUpperCase()}`;
+    });
+}
+
 export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(function TombstoneCard(
   { data, mode, typographySettings },
   ref
@@ -32,8 +41,17 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
   const renderScale = widthPx / sizeConfig.previewWidthPx;
   const selectedFontFamily = getFontFamilyCss(typographySettings.fontFamily);
   const logoScale = 0.9;
-  const resolveFontSizePx = (element: Parameters<typeof getFontBaseSize>[1]) =>
-    `${Math.round(getFontBaseSize(data.templateStyle, element) * fontScale * textScale * renderScale * 10) / 10}px`;
+  const resolveFontSizePx = (element: Parameters<typeof getFontBaseSize>[1]) => {
+    const isSmallClassic =
+      data.size === "small" &&
+      (data.templateStyle === "double-vertical" || data.templateStyle === "left-top") &&
+      (element === "role" || element === "description" || element === "date" || element === "sector");
+
+    const px = isSmallClassic
+      ? 6 * renderScale
+      : getFontBaseSize(data.templateStyle, element) * fontScale * textScale * renderScale;
+    return `${Math.round(px * 10) / 10}px`;
+  };
 
   const contentLeft = Math.round(widthPx * LAYOUT_RATIOS.contentLeft);
   const textLeft = Math.max(0, contentLeft - Math.round(widthPx * 0.04));
@@ -54,6 +72,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
   const dateText = formatMonthYear(data.month, data.language);
   const yearText = data.month ? data.month.split("-")[0] ?? "" : "";
   const sectorText = getSectorLabel(data.sector, data.language);
+  const sectorTextDisplay = toTitleCaseWords(sectorText);
   const roleText = getRoleLabel(data.role, data.language);
   const backgroundColor =
     data.backgroundMode === "transparent" ? "transparent" : getBackgroundCssColor(data) ?? "#000000";
@@ -75,8 +94,8 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
     const roleTopPx = Math.round(heightPx * 0.295);
     const roleHeightPx = Math.round(heightPx * 0.13);
     const descTopPx = Math.round(heightPx * 0.475);
-    const valueTopPx = Math.round(heightPx * 0.81);
-    const yearTopPx = Math.round(heightPx * 0.9);
+    const valueTopPx = Math.round(heightPx * 0.795);
+    const yearTopPx = Math.round(heightPx * 0.885);
     const descHeightPx = Math.max(10, valueTopPx - descTopPx - Math.round(heightPx * 0.03));
     const borderColor = "#CFCFCF";
     const borderRadiusPx = Math.max(6, Math.round(widthPx * 0.03));
@@ -223,7 +242,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
       />
 
       <div
-        className="absolute left-0 whitespace-nowrap font-normal uppercase text-black/82"
+        className="absolute left-0 whitespace-nowrap font-normal text-black/82"
         style={{
           top: `${sectorTop}px`,
           left: `${Math.round(widthPx * 0.04)}px`,
@@ -231,7 +250,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
           letterSpacing: "0.05em"
         }}
       >
-        {sectorText}
+        {sectorTextDisplay}
       </div>
 
       {showEsgIcon && (

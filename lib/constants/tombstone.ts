@@ -214,7 +214,7 @@ export const FONT_BASE_SIZES: Record<TombstoneStyle, Record<TombstoneFontElement
   "full-border-centered": {
     sector: 11,
     date: 11,
-    description: 11,
+    description: 12,
     role: 11.66,
     dealValue: 13.8,
     year: 11
