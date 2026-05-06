@@ -266,13 +266,13 @@ async function drawEditableTombstoneOnSlide({
     });
 
     const centeredPadX = Math.round(widthPx * 0.07);
-    const logoTopPx = Math.round(heightPx * 0.055);
+    const logoTopPx = Math.round(heightPx * 0.07);
     const contentW = widthPx - centeredPadX * 2;
     const logoBoxHeight = Math.round(heightPx * 0.225 * logoScale);
     const logoBoxWidth = Math.round(contentW * logoScale);
-    const roleTopPx = Math.round(heightPx * 0.295);
+    const roleTopPx = Math.round(heightPx * 0.315);
     const roleHeightPx = Math.round(heightPx * 0.13);
-    const descTopPx = Math.round(heightPx * 0.475);
+    const descTopPx = Math.round(heightPx * 0.495);
     const valueTopPx = Math.round(heightPx * 0.795);
     const yearTopPx = Math.round(heightPx * 0.885);
     const descHeightPx = Math.max(10, valueTopPx - descTopPx - Math.round(heightPx * 0.03));
