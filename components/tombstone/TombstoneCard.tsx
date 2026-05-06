@@ -47,8 +47,9 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
       (data.templateStyle === "double-vertical" || data.templateStyle === "left-top") &&
       (element === "role" || element === "description" || element === "date" || element === "sector");
 
+    // 6pt target in PPT corresponds to ~8 CSS px at 96dpi.
     const px = isSmallClassic
-      ? 6 * renderScale
+      ? 8 * renderScale
       : getFontBaseSize(data.templateStyle, element) * fontScale * textScale * renderScale;
     return `${Math.round(px * 10) / 10}px`;
   };
