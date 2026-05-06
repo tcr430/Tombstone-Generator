@@ -345,7 +345,7 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
         style={{
           top: `${roleTop}px`,
           left: `${textLeft}px`,
-          maxWidth: `${Math.round(widthPx * 0.84)}px`,
+          maxWidth: `${Math.round(widthPx * 0.9)}px`,
           fontSize: resolveFontSizePx("role"),
           letterSpacing: "0.01em"
         }}
