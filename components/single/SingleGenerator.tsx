@@ -50,7 +50,16 @@ export function SingleGenerator({ typographySettings }: SingleGeneratorProps) {
   }, [formData.templateStyle, formData.size]);
 
   function updateField<K extends keyof TombstoneFormData>(field: K, value: TombstoneFormData[K]): void {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      if (field === "templateStyle") {
+        const nextStyle = value as TombstoneFormData["templateStyle"];
+        if (nextStyle === "full-border-centered") {
+          return { ...prev, templateStyle: nextStyle, size: prev.size === "small" ? "medium" : prev.size };
+        }
+        return { ...prev, templateStyle: nextStyle, size: "small" };
+      }
+      return { ...prev, [field]: value };
+    });
     setErrors((prev) => {
       const fieldKey = field as keyof TombstoneFormErrors;
       const clone = { ...prev };

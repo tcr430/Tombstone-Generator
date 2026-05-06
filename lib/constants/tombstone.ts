@@ -251,7 +251,7 @@ export const DEFAULT_FORM_DATA: TombstoneFormData = {
   templateStyle: "double-vertical",
   backgroundMode: "custom",
   backgroundColor: "#FFFFFF",
-  size: "medium",
+  size: "small",
   format: "png"
 };
 

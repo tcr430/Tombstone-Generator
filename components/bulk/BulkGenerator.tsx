@@ -54,7 +54,7 @@ function getExportTimestamp(): string {
 export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
   const [settings, setSettings] = useState<BulkGlobalSettings>({
     language: "pt",
-    size: "medium",
+    size: "small",
     format: "png",
     templateStyle: "double-vertical",
     pptxPerSlide: 6,
@@ -79,7 +79,7 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
   const sizeOptions = getSizeOptionsForStyle(settings.templateStyle);
   const DEFAULT_BULK_SETTINGS: BulkGlobalSettings = {
     language: "pt",
-    size: "medium",
+    size: "small",
     format: "png",
     templateStyle: "double-vertical",
     pptxPerSlide: 6,
@@ -130,7 +130,16 @@ export function BulkGenerator({ typographySettings }: BulkGeneratorProps) {
   }
 
   function updateSettings<K extends keyof BulkGlobalSettings>(key: K, value: BulkGlobalSettings[K]): void {
-    setSettings((prev) => ({ ...prev, [key]: value }));
+    setSettings((prev) => {
+      if (key === "templateStyle") {
+        const nextStyle = value as BulkGlobalSettings["templateStyle"];
+        if (nextStyle === "full-border-centered") {
+          return { ...prev, templateStyle: nextStyle, size: prev.size === "small" ? "medium" : prev.size };
+        }
+        return { ...prev, templateStyle: nextStyle, size: "small" };
+      }
+      return { ...prev, [key]: value };
+    });
     if (key === "backgroundMode" && value === "transparent" && settings.format === "jpeg") {
       setSettings((prev) => ({ ...prev, format: "png" }));
     }
