@@ -224,7 +224,7 @@ async function drawEditableTombstoneOnSlide({
       (data.templateStyle === "double-vertical" || data.templateStyle === "left-top") &&
       (element === "role" || element === "description" || element === "date" || element === "sector");
     if (isSmallClassic) {
-      return round2(6 * scale);
+      return round2(6.75 * scale);
     }
     const px = getFontBaseSize(data.templateStyle, element) * fontScale * textScale * renderScale;
     return round2(pxToPt(px) * scale);

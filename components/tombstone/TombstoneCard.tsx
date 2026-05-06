@@ -47,10 +47,22 @@ export const TombstoneCard = forwardRef<HTMLDivElement, TombstoneCardProps>(func
       (data.templateStyle === "double-vertical" || data.templateStyle === "left-top") &&
       (element === "role" || element === "description" || element === "date" || element === "sector");
 
-    // 6pt target in PPT corresponds to ~8 CSS px at 96dpi.
-    const px = isSmallClassic
-      ? 8 * renderScale
-      : getFontBaseSize(data.templateStyle, element) * fontScale * textScale * renderScale;
+    const px = (() => {
+      if (!isSmallClassic) {
+        return getFontBaseSize(data.templateStyle, element) * fontScale * textScale * renderScale;
+      }
+
+      // Match PPT fixed 6pt in exported PNG:
+      // 6pt * (300px / 72pt) = 25px on export canvas.
+      const exportTargetPx = 25;
+      if (mode === "export") {
+        return exportTargetPx;
+      }
+
+      // Keep same physical proportion in preview by scaling down from export.
+      const exportToPreviewScale = sizeConfig.exportWidthPx / sizeConfig.previewWidthPx;
+      return exportTargetPx / exportToPreviewScale;
+    })();
     return `${Math.round(px * 10) / 10}px`;
   };
 
